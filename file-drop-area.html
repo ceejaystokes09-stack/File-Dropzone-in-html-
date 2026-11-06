@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A GitHub-inspired accessible file upload drop area with drag-and-drop and a file picker.">
+  <title>File Drop Area</title>
+  <style>
+    :root {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+      color: #1f2328;
+      background: #f6f8fa;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      --blue: #0969da;
+      --border: #d1d9e0;
+      --muted: #59636e;
+    }
+    * { box-sizing: border-box; }
+    body { min-height: 100vh; margin: 0; }
+    .topbar { height: 64px; display: flex; align-items: center; padding: 0 28px; color: white; background: #1f2328; }
+    .mark { width: 34px; height: 34px; display: grid; place-items: center; margin-right: 12px; border: 1px solid #ffffff50; border-radius: 50%; font-weight: 800; }
+    .brand { font-weight: 650; letter-spacing: -.01em; }
+    main { width: min(760px, calc(100% - 32px)); margin: 58px auto; }
+    .breadcrumb { margin: 0 0 18px; color: var(--muted); font-size: .9rem; }
+    .breadcrumb a { color: var(--blue); text-decoration: none; }
+    h1 { margin: 0; font-size: clamp(1.7rem, 4vw, 2rem); letter-spacing: -.035em; }
+    .subtitle { margin: 10px 0 28px; color: var(--muted); line-height: 1.6; }
+    .panel { overflow: hidden; border: 1px solid var(--border); border-radius: 10px; background: white; box-shadow: 0 1px 3px #1f23280a; }
+    .panel-heading { padding: 18px 20px; border-bottom: 1px solid var(--border); font-size: .95rem; font-weight: 650; }
+    .drop-zone {
+      margin: 20px;
+      padding: 38px 20px;
+      border: 2px dashed #afb8c1;
+      border-radius: 8px;
+      background: #f6f8fa;
+      text-align: center;
+      transition: border-color .15s ease, background-color .15s ease, box-shadow .15s ease;
+    }
+    .drop-zone.is-dragging { border-color: var(--blue); background: #ddf4ff; box-shadow: inset 0 0 0 1px var(--blue); }
+    .upload-icon { width: 40px; height: 40px; margin: 0 auto 12px; color: #59636e; }
+    .drop-title { margin: 0; font-weight: 600; }
+    .drop-or { margin: 7px 0 13px; color: var(--muted); font-size: .9rem; }
+    .choose-button {
+      min-height: 36px;
+      padding: 7px 14px;
+      border: 1px solid #1f232826;
+      border-radius: 6px;
+      color: #1f2328;
+      background: linear-gradient(#fff, #f6f8fa);
+      box-shadow: 0 1px 0 #1f23280a;
+      font: inherit;
+      font-size: .9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .choose-button:hover { background: #f3f4f6; }
+    .choose-button:focus-visible, .remove-button:focus-visible, a:focus-visible {
+      outline: 3px solid #0969da55;
+      outline-offset: 2px;
+    }
+    .file-hint { margin: 12px 0 0; color: var(--muted); font-size: .8rem; }
+    .file-input { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; clip-path: inset(50%); }
+    .file-list { display: grid; gap: 8px; margin: 0 20px 20px; padding: 0; list-style: none; }
+    .file-item { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 12px; border: 1px solid var(--border); border-radius: 7px; background: white; }
+    .file-icon { flex: 0 0 auto; color: #59636e; }
+    .file-details { flex: 1; min-width: 0; }
+    .file-name { overflow: hidden; margin: 0; font-size: .9rem; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+    .file-size { margin: 4px 0 0; color: var(--muted); font-size: .78rem; }
+    .remove-button { flex: 0 0 auto; padding: 6px 9px; border: 0; border-radius: 5px; color: #cf222e; background: transparent; font: inherit; font-size: .82rem; cursor: pointer; }
+    .remove-button:hover { background: #ffebe9; }
+    .status { min-height: 24px; margin: 14px 0 0; color: var(--muted); font-size: .86rem; }
+    .status:empty { display: none; }
+    .status.error { color: #cf222e; }
+    .footer-note { margin: 20px 0 0; color: var(--muted); font-size: .84rem; line-height: 1.6; }
+    @media (max-width: 520px) {
+      .topbar { padding: 0 16px; }
+      main { margin-top: 36px; }
+      .drop-zone { margin: 14px; padding: 30px 12px; }
+      .file-list { margin: 0 14px 14px; }
+      .panel-heading { padding: 16px; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <span class="mark" aria-hidden="true">G</span>
+    <span class="brand">Files</span>
+  </header>
+
+  <main>
+    <p class="breadcrumb"><a href="index.html">HTML input guide</a> / Upload files</p>
+    <h1>Add files</h1>
+    <p class="subtitle">Drag and drop files here, or choose them from your device.</p>
+
+    <section class="panel" aria-labelledby="upload-heading">
+      <div class="panel-heading" id="upload-heading">Upload files</div>
+      <div class="drop-zone" id="drop-zone">
+        <svg class="upload-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M4.5 14.5v4A1.5 1.5 0 0 0 6 20h12a1.5 1.5 0 0 0 1.5-1.5v-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <p class="drop-title">Drag files here to add them to your project</p>
+        <p class="drop-or">or</p>
+        <button class="choose-button" id="choose-button" type="button">Choose your files</button>
+        <input class="file-input" id="file-input" type="file" multiple aria-label="Choose files to upload">
+        <p class="file-hint">You can select multiple files. Files are shown here locally; connect an upload service to send them.</p>
+      </div>
+      <ul class="file-list" id="file-list" aria-label="Selected files"></ul>
+    </section>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+    <p class="footer-note">This demo previews selected file names and sizes in your browser. It does not upload or store file contents. Add a server endpoint to perform an actual upload.</p>
+  </main>
+
+  <script>
+    const dropZone = document.querySelector("#drop-zone");
+    const fileInput = document.querySelector("#file-input");
+    const chooseButton = document.querySelector("#choose-button");
+    const fileList = document.querySelector("#file-list");
+    const status = document.querySelector("#status");
+    const selectedFiles = new Map();
+    let nextFileId = 0;
+
+    function formatSize(bytes) {
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+      if (bytes < 1024 * 1024 * 1024) return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+      return `${(bytes / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+    }
+
+    function renderFiles() {
+      fileList.replaceChildren();
+      for (const [id, file] of selectedFiles) {
+        const item = document.createElement("li");
+        item.className = "file-item";
+
+        const icon = document.createElement("span");
+        icon.className = "file-icon";
+        icon.setAttribute("aria-hidden", "true");
+        icon.textContent = "▤";
+
+        const details = document.createElement("div");
+        details.className = "file-details";
+        const name = document.createElement("p");
+        name.className = "file-name";
+        name.textContent = file.name;
+        const size = document.createElement("p");
+        size.className = "file-size";
+        size.textContent = formatSize(file.size);
+        details.append(name, size);
+
+        const remove = document.createElement("button");
+        remove.className = "remove-button";
+        remove.type = "button";
+        remove.textContent = "Remove";
+        remove.setAttribute("aria-label", `Remove ${file.name}`);
+        remove.addEventListener("click", () => {
+          selectedFiles.delete(id);
+          renderFiles();
+          status.textContent = `${file.name} removed.`;
+          status.classList.remove("error");
+        });
+
+        item.append(icon, details, remove);
+        fileList.append(item);
+      }
+    }
+
+    function addFiles(files) {
+      for (const file of files) {
+        const duplicate = [...selectedFiles.values()].some(
+          (existing) => existing.name === file.name && existing.size === file.size && existing.lastModified === file.lastModified
+        );
+        if (!duplicate) selectedFiles.set(nextFileId++, file);
+      }
+      renderFiles();
+      status.classList.remove("error");
+      status.textContent = files.length
+        ? `${files.length} file${files.length === 1 ? "" : "s"} selected.`
+        : "";
+    }
+
+    chooseButton.addEventListener("click", () => fileInput.click());
+    fileInput.addEventListener("change", () => {
+      addFiles(fileInput.files);
+      fileInput.value = "";
+    });
+
+    for (const eventName of ["dragenter", "dragover"]) {
+      dropZone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "copy";
+        dropZone.classList.add("is-dragging");
+      });
+    }
+
+    for (const eventName of ["dragleave", "dragend"]) {
+      dropZone.addEventListener(eventName, (event) => {
+        if (eventName === "dragend" || !dropZone.contains(event.relatedTarget)) {
+          dropZone.classList.remove("is-dragging");
+        }
+      });
+    }
+
+    dropZone.addEventListener("drop", (event) => {
+      event.preventDefault();
+      dropZone.classList.remove("is-dragging");
+      const files = event.dataTransfer.files;
+      if (files.length) {
+        addFiles(files);
+      } else {
+        status.textContent = "No files were found in that drop. Try choosing files instead.";
+        status.classList.add("error");
+      }
+    });
+  </script>
+</body>
+</html>

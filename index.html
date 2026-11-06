@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A practical reference to every HTML input type, with examples and common use cases.">
+  <title>HTML Input Types — Complete Guide</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #172033;
+      background: #f5f7fb;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      --blue: #315ee8;
+      --muted: #647087;
+      --line: #e2e7f0;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; }
+    header {
+      padding: 64px 24px 48px;
+      color: white;
+      background: linear-gradient(130deg, #173b9e, #315ee8 58%, #6d79ec);
+    }
+    .hero, main { width: min(1050px, 100% - 40px); margin: 0 auto; }
+    .eyebrow { margin: 0 0 12px; color: #d7e2ff; font-size: .78rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
+    h1 { max-width: 720px; margin: 0; font-size: clamp(2.2rem, 6vw, 4rem); line-height: 1.08; letter-spacing: -.045em; }
+    .hero p:last-child { max-width: 660px; margin: 18px 0 0; color: #e5ebff; font-size: 1.08rem; line-height: 1.7; }
+    main { padding: 34px 0 72px; }
+    .intro, .type-card, .reference, .callout {
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: white;
+      box-shadow: 0 8px 28px rgb(26 42 79 / 4%);
+    }
+    .intro { padding: 22px 24px; color: #46536a; line-height: 1.7; }
+    .intro strong { color: #172033; }
+    h2 { margin: 44px 0 18px; font-size: 1.55rem; letter-spacing: -.025em; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 16px; }
+    .type-card { min-width: 0; padding: 20px; }
+    .type-card h3 { margin: 0 0 10px; font-size: 1.05rem; }
+    code {
+      padding: 3px 7px;
+      border-radius: 6px;
+      color: #244bc5;
+      background: #eff3ff;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+      font-size: .9em;
+    }
+    .type-card p { margin: 11px 0 0; color: var(--muted); font-size: .93rem; line-height: 1.55; }
+    .demo { margin-top: 16px; }
+    .demo label, .demo .label { display: block; margin-bottom: 7px; color: #344057; font-size: .85rem; font-weight: 650; }
+    input, select, button { font: inherit; }
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="image"]):not([type="hidden"]),
+    select {
+      max-width: 100%;
+      min-height: 40px;
+      padding: 8px 10px;
+      border: 1px solid #cbd3e1;
+      border-radius: 8px;
+      background: white;
+    }
+    input[type="color"] { width: 52px; height: 40px; padding: 3px; border: 1px solid #cbd3e1; border-radius: 8px; }
+    input[type="range"] { width: min(100%, 240px); accent-color: var(--blue); }
+    input[type="checkbox"], input[type="radio"] { width: 17px; height: 17px; accent-color: var(--blue); vertical-align: middle; }
+    input[type="file"] { max-width: 100%; }
+    input[type="image"] { width: 96px; height: 36px; border: 0; border-radius: 8px; }
+    .button-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .button-row button, .button-row input[type="button"], .button-row input[type="reset"], .button-row input[type="submit"] {
+      min-height: 38px; padding: 8px 13px; border: 1px solid #cbd3e1; border-radius: 8px; background: white; cursor: pointer;
+    }
+    .button-row input[type="submit"] { border-color: var(--blue); color: white; background: var(--blue); }
+    .hint { margin-top: 7px !important; font-size: .8rem !important; }
+    .reference { overflow: hidden; }
+    .reference table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 14px 16px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+    th { color: #56627a; background: #f8f9fc; font-size: .78rem; letter-spacing: .04em; text-transform: uppercase; }
+    td { color: #46536a; line-height: 1.5; }
+    tr:last-child td { border-bottom: 0; }
+    .callout { margin-top: 24px; padding: 20px 22px; color: #46536a; line-height: 1.7; }
+    .callout a { color: var(--blue); font-weight: 700; }
+    footer { padding: 20px; color: var(--muted); text-align: center; font-size: .85rem; }
+    @media (max-width: 600px) {
+      header { padding: 46px 0 38px; }
+      .hero, main { width: min(100% - 28px, 1050px); }
+      .intro, .type-card { padding: 17px; }
+      .reference { overflow-x: auto; }
+      .reference table { min-width: 570px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="hero">
+      <p class="eyebrow">HTML quick reference</p>
+      <h1>Every HTML input type, explained.</h1>
+      <p>Explore all 22 values of the <code>&lt;input type&gt;</code> attribute, see them in action, and learn when each one is useful.</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="intro" aria-label="How to use this guide">
+      <strong>Try the examples.</strong> These controls are real browser inputs. The examples are for learning; they are not wrapped in a form that submits data. Use labels in your own forms, validate important values on the server, and give every control an accessible name.
+    </section>
+
+    <h2>All 22 input types</h2>
+    <section class="grid" aria-label="Interactive input type examples">
+      <article class="type-card">
+        <h3><code>text</code></h3>
+        <div class="demo"><label for="text-example">Display name</label><input id="text-example" type="text" placeholder="Ada Lovelace"></div>
+        <p>Single-line, general-purpose text. Use for names, titles, and values without a more specific input type.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>password</code></h3>
+        <div class="demo"><label for="password-example">Password</label><input id="password-example" type="password" placeholder="At least 8 characters" autocomplete="new-password"></div>
+        <p>Conceals typed characters on screen. Use for passwords; always transmit securely and handle authentication on the server.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>email</code></h3>
+        <div class="demo"><label for="email-example">Email address</label><input id="email-example" type="email" placeholder="you@example.com" autocomplete="email"></div>
+        <p>For one or more email addresses. Enables email-friendly keyboards on mobile and supports built-in format checks.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>search</code></h3>
+        <div class="demo"><label for="search-example">Search articles</label><input id="search-example" type="search" placeholder="Search…"></div>
+        <p>Text field for search queries. Browsers may add a clear control or apply search-specific keyboard behavior.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>tel</code></h3>
+        <div class="demo"><label for="tel-example">Phone number</label><input id="tel-example" type="tel" placeholder="+1 555 010 1234" autocomplete="tel"></div>
+        <p>For telephone numbers. No universal number format is enforced, so apply the format your service expects.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>url</code></h3>
+        <div class="demo"><label for="url-example">Website</label><input id="url-example" type="url" placeholder="https://example.com"></div>
+        <p>For a web address. Browsers can check that the value is a valid URL before form submission.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>number</code></h3>
+        <div class="demo"><label for="number-example">Quantity</label><input id="number-example" type="number" min="1" max="20" step="1" value="2"></div>
+        <p>For numeric values where a spinbutton makes sense, such as a quantity. Set appropriate <code>min</code>, <code>max</code>, and <code>step</code>.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>range</code></h3>
+        <div class="demo"><label for="range-example">Volume: <output id="range-value" for="range-example">35</output>%</label><input id="range-example" type="range" min="0" max="100" value="35"></div>
+        <p>For choosing an approximate value within a range, like volume or brightness—not an exact numeric entry.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>date</code></h3>
+        <div class="demo"><label for="date-example">Appointment date</label><input id="date-example" type="date"></div>
+        <p>For a calendar date (year, month, and day) with no time or time zone.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>time</code></h3>
+        <div class="demo"><label for="time-example">Opening time</label><input id="time-example" type="time"></div>
+        <p>For a time of day, such as a meeting time. It does not represent a date or time zone.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>datetime-local</code></h3>
+        <div class="demo"><label for="datetime-example">Event date and time</label><input id="datetime-example" type="datetime-local"></div>
+        <p>For a local date and time with no time-zone information, such as scheduling in the user's own locale.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>month</code></h3>
+        <div class="demo"><label for="month-example">Billing month</label><input id="month-example" type="month"></div>
+        <p>For selecting a month and year, such as a reporting period or card expiry month.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>week</code></h3>
+        <div class="demo"><label for="week-example">Release week</label><input id="week-example" type="week"></div>
+        <p>For selecting a numbered calendar week and year, useful for weekly schedules and reports.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>checkbox</code></h3>
+        <div class="demo"><label><input type="checkbox" name="newsletter"> Send me the newsletter</label></div>
+        <p>For an independent yes/no choice or multiple selections from a list. A checkbox can be checked or unchecked.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>radio</code></h3>
+        <div class="demo">
+          <span class="label">Preferred contact method</span>
+          <label><input type="radio" name="contact-example" value="email" checked> Email</label><br>
+          <label><input type="radio" name="contact-example" value="phone"> Phone</label>
+        </div>
+        <p>For exactly one choice from a small group. Give related radio buttons the same <code>name</code>.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>file</code></h3>
+        <div class="demo"><label for="file-example">Choose a document</label><input id="file-example" type="file"></div>
+        <p>For selecting files from the device. Use <code>accept</code> to guide selection; verify file type and size on the server too.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>color</code></h3>
+        <div class="demo"><label for="color-example">Accent color</label><input id="color-example" type="color" value="#315ee8"></div>
+        <p>For choosing a color, often for themes, drawing tools, or visual customization.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>submit</code></h3>
+        <div class="demo button-row"><input type="submit" value="Submit form" aria-label="Example submit button"></div>
+        <p>Submits its containing form. Use as the primary action after the user has completed the form.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>reset</code></h3>
+        <div class="demo button-row"><input type="reset" value="Reset form" aria-label="Example reset button"></div>
+        <p>Resets controls in its containing form to their initial values. Use sparingly because it can erase user work.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>button</code></h3>
+        <div class="demo button-row"><input type="button" value="Show message" id="button-example"></div>
+        <p>A generic button with no built-in action. Use JavaScript for actions that are not submitting or resetting a form.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>image</code></h3>
+        <div class="demo">
+          <span class="label">Image submit (inside a form)</span>
+          <input type="image" alt="Submit example" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='192' height='72' viewBox='0 0 192 72'%3E%3Crect width='192' height='72' rx='16' fill='%23315ee8'/%3E%3Ctext x='96' y='45' text-anchor='middle' font-family='Arial,sans-serif' font-size='24' font-weight='700' fill='white'%3ESubmit%3C/text%3E%3C/svg%3E">
+        </div>
+        <p>An image-based form submit button. Provide alternative text; coordinates of the click are submitted too.</p>
+      </article>
+      <article class="type-card">
+        <h3><code>hidden</code></h3>
+        <div class="demo">
+          <span class="label">No visible control (inspect the markup)</span>
+          <input type="hidden" name="form-version" value="guide-v1">
+          <p class="hint">Hidden value: <code>form-version=guide-v1</code></p>
+        </div>
+        <p>Stores a value submitted with a form without displaying a control. It is not secure—users can inspect and change it.</p>
+      </article>
+    </section>
+
+    <h2>Quick use-case reference</h2>
+    <div class="reference">
+      <table>
+        <thead><tr><th>Type</th><th>Best for</th><th>Helpful detail</th></tr></thead>
+        <tbody>
+          <tr><td><code>text</code>, <code>search</code>, <code>email</code>, <code>tel</code>, <code>url</code>, <code>password</code></td><td>Entering text with different intent</td><td>Choose the most specific type to improve mobile keyboards and browser validation.</td></tr>
+          <tr><td><code>number</code>, <code>range</code></td><td>Numeric values</td><td>Use number for precise entry; use range for approximate slider input.</td></tr>
+          <tr><td><code>date</code>, <code>time</code>, <code>datetime-local</code>, <code>month</code>, <code>week</code></td><td>Calendar and clock values</td><td>Support and appearance vary by browser and operating system.</td></tr>
+          <tr><td><code>checkbox</code>, <code>radio</code></td><td>Boolean settings and choices</td><td>Checkboxes allow independent/multiple choices; radios allow one choice per shared name.</td></tr>
+          <tr><td><code>file</code>, <code>color</code></td><td>Picking a local file or a color</td><td>Check uploads on the server; provide a color fallback if color precision matters.</td></tr>
+          <tr><td><code>button</code>, <code>submit</code>, <code>reset</code>, <code>image</code></td><td>Actions within or alongside forms</td><td>Use submit for saving, button for custom actions, and reset only when clearing is intentional.</td></tr>
+          <tr><td><code>hidden</code></td><td>Non-visible form metadata</td><td>Never use as a place to store secrets or trusted authorization data.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <aside class="callout">
+      Want a polished uploader? Open <a href="file-drop-area.html">the separate file drop area demo</a> to try drag-and-drop or the Choose files button.
+    </aside>
+  </main>
+  <footer>Built with native HTML, CSS, and JavaScript—no dependencies.</footer>
+  <script>
+    const range = document.querySelector("#range-example");
+    const rangeValue = document.querySelector("#range-value");
+    range.addEventListener("input", () => { rangeValue.value = range.value; });
+
+    document.querySelector("#button-example").addEventListener("click", () => {
+      window.alert("This is a custom button. Add your own action here.");
+    });
+  </script>
+</body>
+</html>
